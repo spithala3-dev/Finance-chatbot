@@ -7,6 +7,30 @@ import random
 # -------------------------
 st.set_page_config(page_title="Finance Buddy 💰", page_icon="💡", layout="centered")
 
+# -------------------------
+# Theme Toggle
+# -------------------------
+theme = st.sidebar.radio("🌗 Choose Theme", ["Light", "Dark"])
+if theme == "Dark":
+    st.markdown(
+        """
+        <style>
+        .stApp { background-color: #0E1117; color: white; }
+        </style>
+        """, unsafe_allow_html=True
+    )
+else:
+    st.markdown(
+        """
+        <style>
+        .stApp { background-color: #FFFFFF; color: black; }
+        </style>
+        """, unsafe_allow_html=True
+    )
+
+# -------------------------
+# App Title
+# -------------------------
 st.title("🚀 Finance Buddy – Your Indian Money Planner")
 st.write("Welcome! Let's plan your money smartly 🇮🇳💰")
 
@@ -29,9 +53,10 @@ savings = income - total_expenses
 # Display Results
 # -------------------------
 st.subheader("📊 Your Money Summary")
-st.write(f"**Total Income:** ₹{income}")
-st.write(f"**Total Expenses:** ₹{total_expenses}")
-st.write(f"**Savings:** ₹{savings}")
+col1, col2, col3 = st.columns(3)
+col1.metric("Income", f"₹{income}")
+col2.metric("Expenses", f"₹{total_expenses}")
+col3.metric("Savings", f"₹{savings}")
 
 # -------------------------
 # Chart Visualization
@@ -70,26 +95,59 @@ if goal_amount > 0:
     st.write(f"To achieve **{goal_name}**, you will need **{months_needed} month(s)** of current savings.")
 
 # -------------------------
-# Investment Ideas
+# Expanded Finance Topics
 # -------------------------
-st.subheader("📈 Investment Ideas for You")
-invest_options = ["SIP in Mutual Funds", "Gold / Sovereign Gold Bonds", "FD / RD", "PPF / NSC", "Stocks (Beginner friendly)"]
-chosen_investment = random.choice(invest_options)
-st.info(f"💡 Consider investing in **{chosen_investment}** with your savings!")
+st.subheader("📘 Explore Finance Topics")
+topic = st.selectbox("Choose a topic:", [
+    "💰 Tax Saving Tips",
+    "👴 Retirement Planning",
+    "💼 Side Income Ideas",
+    "🛡️ Insurance Importance",
+    "🏦 Loan Management",
+    "📚 Education Planning",
+    "🏡 Buying vs Renting Home",
+    "🌍 Travel & Lifestyle Planning",
+    "📊 Stock Market Basics (India)",
+    "💳 Credit Score & Credit Card Management",
+    "🧘 Money & Mental Health",
+    "🎓 Student Finance Tips"
+])
+
+if topic == "💰 Tax Saving Tips":
+    st.info("💡 Use ELSS, PPF, and NPS to save taxes under Section 80C.")
+elif topic == "👴 Retirement Planning":
+    st.info("💡 Start investing early in mutual funds and NPS for a stress-free retirement.")
+elif topic == "💼 Side Income Ideas":
+    st.info("💡 Freelancing, Blogging, Online Courses, or Small E-commerce can boost your income.")
+elif topic == "🛡️ Insurance Importance":
+    st.info("💡 Term Insurance protects your family; Health Insurance saves medical costs.")
+elif topic == "🏦 Loan Management":
+    st.info("💡 Pay high-interest loans first; avoid taking loans for luxury spending.")
+elif topic == "📚 Education Planning":
+    st.info("💡 Start SIPs for your child’s education; education inflation is ~10% per year in India.")
+elif topic == "🏡 Buying vs Renting Home":
+    st.info("💡 Renting is better short-term, but buying gives long-term stability. EMI should be <30% of income.")
+elif topic == "🌍 Travel & Lifestyle Planning":
+    st.info("💡 Keep travel budget <10% of income; use credit card rewards for flights/hotels.")
+elif topic == "📊 Stock Market Basics (India)":
+    st.info("💡 Begin with Index Funds (Nifty 50, Sensex). Avoid intraday if you’re new.")
+elif topic == "💳 Credit Score & Credit Card Management":
+    st.info("💡 Pay bills on time. Keep credit usage <30% to maintain a good CIBIL score.")
+elif topic == "🧘 Money & Mental Health":
+    st.info("💡 Financial stress is real – budget planning reduces anxiety. Emergency fund = peace of mind.")
+elif topic == "🎓 Student Finance Tips":
+    st.info("💡 Students should learn budgeting early. Use scholarships & part-time work to avoid debt.")
 
 # -------------------------
-# Expense Advice
+# Gamification: Rewards
 # -------------------------
-st.subheader("💬 Expense Advice")
-expenses_dict = {"Rent": rent, "Food": food, "Shopping": shopping, "Travel": travel, "Others": others}
-max_expense_category = max(expenses_dict, key=expenses_dict.get)
-
-if max_expense_category == "Shopping":
-    st.info("💡 Try limiting online shopping and impulsive buys!")
-elif max_expense_category == "Travel":
-    st.info("💡 Use public transport or share rides to save money!")
-elif max_expense_category == "Food":
-    st.info("💡 Cooking at home more often can reduce expenses.")
+st.subheader("🏆 Your Money Badge")
+if savings > income * 0.2:
+    st.success("🥇 Smart Saver Badge Earned!")
+elif savings > 0:
+    st.info("🥈 Consistent Saver Badge Earned!")
+else:
+    st.error("🙈 Overspender Badge – Time to improve!")
 
 # -------------------------
 # Quick Finance Quiz
