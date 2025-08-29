@@ -1,4 +1,4 @@
-    import streamlit as st
+import streamlit as st
 
 # --- Page Settings ---
 st.set_page_config(page_title="Personal Finance Chatbot", page_icon="💰", layout="centered")
