@@ -1,6 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import random
+import math
 
 # -------------------------
 # Page Config
@@ -13,26 +14,20 @@ st.set_page_config(page_title="Finance Buddy 💰", page_icon="💡", layout="ce
 theme = st.sidebar.radio("🌗 Choose Theme", ["Light", "Dark"])
 if theme == "Dark":
     st.markdown(
-        """
-        <style>
-        .stApp { background-color: #0E1117; color: white; }
-        </style>
-        """, unsafe_allow_html=True
+        "<style>.stApp { background-color: #0E1117; color: white; }</style>", 
+        unsafe_allow_html=True
     )
 else:
     st.markdown(
-        """
-        <style>
-        .stApp { background-color: #FFFFFF; color: black; }
-        </style>
-        """, unsafe_allow_html=True
+        "<style>.stApp { background-color: #FFFFFF; color: black; }</style>", 
+        unsafe_allow_html=True
     )
 
 # -------------------------
 # App Title
 # -------------------------
-st.title("🚀 Finance Buddy – Your Indian Money Planner")
-st.write("Welcome! Let's plan your money smartly 🇮🇳💰")
+st.title("🚀 Finance Buddy – Your AI Money Coach (India Edition 🇮🇳)")
+st.write("Plan smarter, save better, and grow wealth 💰")
 
 # -------------------------
 # User Inputs
@@ -50,7 +45,7 @@ total_expenses = rent + food + shopping + travel + others
 savings = income - total_expenses
 
 # -------------------------
-# Display Results
+# Display Summary
 # -------------------------
 st.subheader("📊 Your Money Summary")
 col1, col2, col3 = st.columns(3)
@@ -59,124 +54,104 @@ col2.metric("Expenses", f"₹{total_expenses}")
 col3.metric("Savings", f"₹{savings}")
 
 # -------------------------
-# Chart Visualization
+# Expense Breakdown Chart
 # -------------------------
 st.subheader("📌 Expense Breakdown")
 labels = ["Rent", "Food", "Shopping", "Travel", "Others", "Savings"]
 values = [rent, food, shopping, travel, others, savings]
-values_for_chart = [max(0, v) for v in values]
-
 fig, ax = plt.subplots()
-ax.pie(values_for_chart, labels=labels, autopct='%1.1f%%', startangle=90)
+ax.pie([max(0, v) for v in values], labels=labels, autopct='%1.1f%%', startangle=90)
 ax.axis("equal")
 st.pyplot(fig)
 
 # -------------------------
-# Finance Suggestions
+# AI-Style Personalized Advice
 # -------------------------
-st.subheader("💡 Smart Suggestions for You")
-if savings > 0:
-    st.success("Great job! You are saving money ✅")
-    st.write(f"👉 Put **₹{int(savings*0.5)}** in SIP (Mutual Funds)")
-    st.write(f"👉 Put **₹{int(savings*0.3)}** in Fixed Deposit / RD")
-    st.write(f"👉 Keep **₹{int(savings*0.2)}** as Emergency Fund")
+st.subheader("🤖 Personalized Finance Advice")
+if rent > income * 0.3:
+    st.warning(f"🏠 Your rent is {rent/income*100:.1f}% of income (too high). Try to keep it <30%.")
+if savings < income * 0.2:
+    st.error(f"💰 You’re saving only {savings/income*100:.1f}% (too low). Aim for 20%+ of income.")
 else:
-    st.error("⚠️ You are overspending! Try reducing shopping or travel expenses.")
+    st.success("✅ Good job! Your savings rate looks healthy.")
 
 # -------------------------
-# Goal Planning
+# Emergency Fund Calculator
 # -------------------------
-st.subheader("🎯 Set Your Savings Goals")
-goal_name = st.text_input("Enter your goal (e.g., Bike, Trip, Phone)")
-goal_amount = st.number_input("How much do you want to save for this goal? (₹)", min_value=0, step=500)
-
-if goal_amount > 0:
-    months_needed = int(goal_amount / max(savings, 1)) if savings > 0 else "∞"
-    st.write(f"To achieve **{goal_name}**, you will need **{months_needed} month(s)** of current savings.")
+st.subheader("🛡️ Emergency Fund Check")
+required_fund = total_expenses * 6
+st.write(f"👉 Your monthly expense = ₹{total_expenses}. You need **₹{required_fund}** as an emergency fund (6 months).")
 
 # -------------------------
-# Expanded Finance Topics
+# Future Growth Simulator
+# -------------------------
+st.subheader("📈 Future Value of Your Savings")
+years = st.slider("Select Years to Project", 1, 30, 10)
+cagr = 0.12  # 12% SIP assumption
+future_value = savings * (((1 + cagr) ** years - 1) / cagr) * (1 + cagr)
+st.info(f"👉 If you invest ₹{savings}/month in SIP at 12% CAGR, you’ll have **₹{int(future_value):,}** in {years} years.")
+
+# -------------------------
+# Retirement Calculator
+# -------------------------
+st.subheader("👴 Retirement Planning")
+current_age = st.number_input("Your Current Age", min_value=18, max_value=70, value=25)
+retire_age = st.number_input("Planned Retirement Age", min_value=40, max_value=80, value=60)
+years_left = retire_age - current_age
+retirement_corpus = savings * (((1 + cagr) ** years_left - 1) / cagr) * (1 + cagr)
+st.write(f"👉 By {retire_age}, you may accumulate around **₹{int(retirement_corpus):,}** if you save ₹{savings}/month.")
+
+# -------------------------
+# Gamification: Badges
+# -------------------------
+st.subheader("🏆 Your Money Badge")
+if savings > income * 0.3:
+    st.success("🥇 Gold Saver Badge – Amazing discipline!")
+elif savings > income * 0.15:
+    st.info("🥈 Consistent Saver Badge – Keep it up!")
+elif savings > 0:
+    st.warning("🥉 Starter Saver Badge – Try to save more.")
+else:
+    st.error("🙈 Overspender Badge – Time to fix spending.")
+
+# -------------------------
+# Extra Finance Topics
 # -------------------------
 st.subheader("📘 Explore Finance Topics")
 topic = st.selectbox("Choose a topic:", [
     "💰 Tax Saving Tips",
-    "👴 Retirement Planning",
-    "💼 Side Income Ideas",
-    "🛡️ Insurance Importance",
-    "🏦 Loan Management",
     "📚 Education Planning",
-    "🏡 Buying vs Renting Home",
-    "🌍 Travel & Lifestyle Planning",
-    "📊 Stock Market Basics (India)",
-    "💳 Credit Score & Credit Card Management",
+    "💳 Credit Score & Cards",
+    "🏡 Buying vs Renting",
+    "🌍 Travel & Lifestyle",
     "🧘 Money & Mental Health",
-    "🎓 Student Finance Tips"
+    "🎓 Student Finance",
 ])
 
 if topic == "💰 Tax Saving Tips":
     st.info("💡 Use ELSS, PPF, and NPS to save taxes under Section 80C.")
-elif topic == "👴 Retirement Planning":
-    st.info("💡 Start investing early in mutual funds and NPS for a stress-free retirement.")
-elif topic == "💼 Side Income Ideas":
-    st.info("💡 Freelancing, Blogging, Online Courses, or Small E-commerce can boost your income.")
-elif topic == "🛡️ Insurance Importance":
-    st.info("💡 Term Insurance protects your family; Health Insurance saves medical costs.")
-elif topic == "🏦 Loan Management":
-    st.info("💡 Pay high-interest loans first; avoid taking loans for luxury spending.")
 elif topic == "📚 Education Planning":
-    st.info("💡 Start SIPs for your child’s education; education inflation is ~10% per year in India.")
-elif topic == "🏡 Buying vs Renting Home":
-    st.info("💡 Renting is better short-term, but buying gives long-term stability. EMI should be <30% of income.")
-elif topic == "🌍 Travel & Lifestyle Planning":
-    st.info("💡 Keep travel budget <10% of income; use credit card rewards for flights/hotels.")
-elif topic == "📊 Stock Market Basics (India)":
-    st.info("💡 Begin with Index Funds (Nifty 50, Sensex). Avoid intraday if you’re new.")
-elif topic == "💳 Credit Score & Credit Card Management":
-    st.info("💡 Pay bills on time. Keep credit usage <30% to maintain a good CIBIL score.")
+    st.info("💡 Start SIPs for education early – costs rise ~10% yearly in India.")
+elif topic == "💳 Credit Score & Cards":
+    st.info("💡 Pay bills on time & keep usage <30% for a good CIBIL score.")
+elif topic == "🏡 Buying vs Renting":
+    st.info("💡 Renting is flexible; buying builds long-term equity. EMI <30% of income.")
+elif topic == "🌍 Travel & Lifestyle":
+    st.info("💡 Keep travel <10% of income. Use credit card points for free trips.")
 elif topic == "🧘 Money & Mental Health":
-    st.info("💡 Financial stress is real – budget planning reduces anxiety. Emergency fund = peace of mind.")
-elif topic == "🎓 Student Finance Tips":
-    st.info("💡 Students should learn budgeting early. Use scholarships & part-time work to avoid debt.")
+    st.info("💡 Overspending causes stress. Budgeting = peace of mind.")
+elif topic == "🎓 Student Finance":
+    st.info("💡 Use scholarships, part-time jobs. Avoid loans for luxury items.")
 
 # -------------------------
-# Gamification: Rewards
-# -------------------------
-st.subheader("🏆 Your Money Badge")
-if savings > income * 0.2:
-    st.success("🥇 Smart Saver Badge Earned!")
-elif savings > 0:
-    st.info("🥈 Consistent Saver Badge Earned!")
-else:
-    st.error("🙈 Overspender Badge – Time to improve!")
-
-# -------------------------
-# Quick Finance Quiz
-# -------------------------
-st.subheader("📝 Quick Finance Quiz")
-quiz_question = "Which is safer for long-term savings in India?"
-quiz_options = ["Stocks", "Gold", "FD / RD", "Cryptocurrency"]
-user_answer = st.radio(quiz_question, quiz_options)
-
-if user_answer:
-    if user_answer == "FD / RD":
-        st.success("✅ Correct! FD / RD is safe for long-term savings in India.")
-    else:
-        st.warning("⚠️ Not quite! FD / RD is safest for guaranteed returns.")
-
-# -------------------------
-# Motivational Tips
+# Motivational Tip
 # -------------------------
 tips = [
     "💡 Little drops make an ocean – start saving today!",
     "🌱 Investing early is like planting a tree – shade comes later.",
     "🪙 Gold, SIP, and FD are your best friends in India.",
     "📉 Avoid debt traps – credit card bills can grow like wildfire!",
-    "🚀 A budget is telling your money where to go, instead of wondering where it went.",
-    "🍎 Save on groceries by planning meals weekly.",
-    "🏦 Keep a separate account for emergency funds.",
-    "📊 Track every expense for better awareness.",
-    "🎁 Avoid borrowing for luxury items – plan ahead instead."
+    "🚀 Budgeting is telling money where to go, not wondering where it went.",
 ]
-
 st.subheader("🌟 Finance Tip of the Day")
 st.info(random.choice(tips))
