@@ -1,88 +1,94 @@
-import streamlit as st
-from datetime import datetime
+    import streamlit as st
 
-st.set_page_config(page_title="Personal Finance Chatbot",
-                   page_icon="💰",
-                   layout="wide")
+# --- Page Settings ---
+st.set_page_config(page_title="Personal Finance Chatbot", page_icon="💰", layout="centered")
 
-st.markdown(
-    """
+# --- Custom CSS for colors & style ---
+st.markdown("""
     <style>
-    .title {font-size:38px; font-weight:700; margin-bottom:0; color:#1E293B;}
-    .subtitle {color:#475569; margin-top:0; margin-bottom:20px;}
-    .user-bubble {background-color:#DCFCE7; padding:10px 15px; border-radius:12px; margin:6px 0; max-width:80%; float:right; clear:both;}
-    .bot-bubble {background-color:#F1F5F9; padding:10px 15px; border-radius:12px; margin:6px 0; max-width:80%; float:left; clear:both;}
-    .clear {clear:both;}
-    .card {background:#ffffff; padding:16px; border-radius:16px; box-shadow:0 2px 10px rgba(0,0,0,0.06);}
+    .main {
+        background-color: #f5f7fa;
+        color: #000000;
+        font-family: 'Arial';
+    }
+    h1, h2, h3 {
+        color: #1a73e8;
+    }
+    .stSuccess {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 10px;
+        border-radius: 8px;
+    }
+    .stWarning {
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 10px;
+        border-radius: 8px;
+    }
+    .stInfo {
+        background-color: #e7f3fe;
+        color: #0c5460;
+        padding: 10px;
+        border-radius: 8px;
+    }
     </style>
-    """,
-    unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
 
-st.markdown('<div class="title">💬 Personal Finance Chatbot</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Your friendly assistant for savings, tax, and investments.</div>', unsafe_allow_html=True)
+# --- Title ---
+st.title("💬 Personal Finance Chatbot (India)")
+st.caption("Simple & friendly guidance for savings, taxes, and investments 🇮🇳")
 
-with st.sidebar:
-    st.header("👤 Profile")
-    name = st.text_input("Your Name", "Guest")
-    user_type = st.selectbox("Who are you?", ["Student", "Professional"])
-    st.write("---")
-    st.caption("💡 Tip: Ask me about 'tax', 'budget', 'loan', or 'investment'.")
+# --- User Info ---
+st.header("📝 User Information")
+user_type = st.selectbox("Are you a student or professional?", ["Student", "Professional"])
+income = st.number_input("Enter your monthly income (₹)", min_value=0.0, step=1000.0, format="%.2f")
+expenses = st.number_input("Enter your monthly expenses (₹)", min_value=0.0, step=1000.0, format="%.2f")
 
-st.header("📊 Budget Summary")
-income = st.number_input("Monthly income (₹)", min_value=0.0, step=1000.0, format="%.2f")
-expenses = st.number_input("Monthly expenses (₹)", min_value=0.0, step=1000.0, format="%.2f")
-
-def format_money(x):
-    return f"₹{x:,.0f}"
-
+# --- Budget Summary ---
 if income > 0:
     savings = income - expenses
-    savings_rate = (savings / income * 100) if income > 0 else 0
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Income", format_money(income))
-    col2.metric("Expenses", format_money(expenses))
-    col3.metric("Savings", format_money(savings), f"{savings_rate:.1f}%")
+    st.header("📊 Budget Summary")
+    st.write(f"💵 **Income**: ₹{income:,.2f}")
+    st.write(f"💸 **Expenses**: ₹{expenses:,.2f}")
+    st.write(f"💰 **Savings**: ₹{savings:,.2f}")
 
-    if savings < 0:
-        st.error("⚠️ You are overspending — expenses are higher than income!")
-    elif savings == 0:
-        st.warning("😐 You are breaking even. Try to cut a few expenses to start saving.")
+    st.header("💡 Suggestions")
+    if savings <= 0:
+        st.warning("⚠️ You are overspending! Reduce unnecessary expenses.")
     else:
-        st.success("🎉 Great! You are saving money every month!")
+        st.success("✅ You are saving money!")
         if user_type == "Student":
-            st.info("✨ As a student, save at least 20% of your pocket money/income. Small SIPs (₹500/month) can grow big over time.")
+            st.write("- Save at least 20% of income.")
+            st.write("- Start a small **Recurring Deposit (RD)** or **SIP**.")
         else:
-            st.info("✨ As a professional, aim to save 30% of income. Use ELSS, PPF, NPS for tax benefits and long-term growth.")
+            st.write("- Save at least 30% of income.")
+            st.write("- Invest in **ELSS, PPF, NPS** for tax savings.")
+            st.write("- Maintain an **emergency fund** (6 months expenses).")
 
-st.header("💬 Chat with your Finance Buddy")
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# --- Chatbot Section ---
+st.header("💬 Ask a finance question (India Focus)")
 
-def bot_reply(user_msg):
-    msg = user_msg.lower()
-    if "tax" in msg:
-        return "🧾 To save tax, you can invest in ELSS, PPF, NPS, or Insurance under Section 80C."
-    elif "investment" in msg or "invest" in msg:
-        return "📈 A safe start: Build an emergency fund, then start SIPs in index funds and keep some fixed income."
-    elif "loan" in msg or "emi" in msg:
-        return "💳 Keep total EMIs below 30% of your income. Pay credit card dues fully each month."
-    elif "budget" in msg or "save" in msg:
-        return "💡 Try the 50-30-20 rule: 50% needs, 30% wants, 20% savings."
+user_q = st.text_input("Type your question here:")
+
+if user_q:
+    q = user_q.lower()
+
+    if "tax" in q:
+        st.info("👉 Save tax with **ELSS, PPF, NPS**, and insurance under **80C**. Also claim HRA, 80D (medical insurance).")
+    elif "investment" in q:
+        st.info("👉 Best for beginners: SIPs in mutual funds, FDs for safety, and an emergency fund.")
+    elif "loan" in q:
+        st.info("👉 Take a loan only if necessary. Compare interest rates. Home loan is better than personal loan.")
+    elif "savings" in q:
+        st.info("👉 Rule of thumb: Save **30% of income**. Use RDs, FDs, or SIPs depending on your goal.")
+    elif "insurance" in q:
+        st.info("👉 Buy a **term life insurance** (not endowment). Always take **health insurance** for family.")
+    elif "stock" in q:
+        st.info("👉 Start small with mutual funds SIP. Direct stocks are risky for beginners.")
+    elif "retirement" in q:
+        st.info("👉 Start investing early in **NPS + Mutual Funds** for long term.")
+    elif "gold" in q:
+        st.info("👉 Instead of physical gold, consider **Gold ETF or Sovereign Gold Bonds**.")
     else:
-        return "🤔 I don't know that exactly, but start by tracking expenses and saving a small amount every month."
-
-user_input = st.text_input("Ask me (e.g. 'How to save tax?')")
-
-if user_input:
-    st.session_state.messages.append({"role": "user", "text": user_input})
-    st.session_state.messages.append({"role": "bot", "text": bot_reply(user_input)})
-
-for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        st.markdown(f'<div class="user-bubble">{msg["text"]}</div><div class="clear"></div>', unsafe_allow_html=True)
-    else:
-        st.markdown(f'<div class="bot-bubble">{msg["text"]}</div><div class="clear"></div>', unsafe_allow_html=True)
-
-st.write("---")
-st.caption("Made with ❤️ using Streamlit — your beginner-friendly finance buddy.")
+        st.info("👉 I don’t know that yet. But always save regularly and invest wisely!")
