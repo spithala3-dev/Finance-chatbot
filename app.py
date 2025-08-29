@@ -1,94 +1,73 @@
 import streamlit as st
+import matplotlib.pyplot as plt
+import random
 
-# --- Page Settings ---
-st.set_page_config(page_title="Personal Finance Chatbot", page_icon="💰", layout="centered")
+# -------------------------
+# Page Config
+# -------------------------
+st.set_page_config(page_title="Finance Buddy 💰", page_icon="💡", layout="centered")
 
-# --- Custom CSS for colors & style ---
-st.markdown("""
-    <style>
-    .main {
-        background-color: #f5f7fa;
-        color: #000000;
-        font-family: 'Arial';
-    }
-    h1, h2, h3 {
-        color: #1a73e8;
-    }
-    .stSuccess {
-        background-color: #d4edda;
-        color: #155724;
-        padding: 10px;
-        border-radius: 8px;
-    }
-    .stWarning {
-        background-color: #fff3cd;
-        color: #856404;
-        padding: 10px;
-        border-radius: 8px;
-    }
-    .stInfo {
-        background-color: #e7f3fe;
-        color: #0c5460;
-        padding: 10px;
-        border-radius: 8px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+st.title("🚀 Finance Buddy – Your Indian Money Planner")
+st.write("Welcome! Let's plan your money smartly 🇮🇳💰")
 
-# --- Title ---
-st.title("💬 Personal Finance Chatbot (India)")
-st.caption("Simple & friendly guidance for savings, taxes, and investments 🇮🇳")
+# -------------------------
+# User Inputs
+# -------------------------
+income = st.number_input("💵 Enter your Monthly Income (₹)", min_value=1000, step=500)
 
-# --- User Info ---
-st.header("📝 User Information")
-user_type = st.selectbox("Are you a student or professional?", ["Student", "Professional"])
-income = st.number_input("Enter your monthly income (₹)", min_value=0.0, step=1000.0, format="%.2f")
-expenses = st.number_input("Enter your monthly expenses (₹)", min_value=0.0, step=1000.0, format="%.2f")
+st.subheader("🛒 Enter Your Monthly Expenses")
+rent = st.slider("🏠 Rent / Housing", 0, int(income), int(income * 0.3))
+food = st.slider("🍲 Food & Groceries", 0, int(income), int(income * 0.2))
+shopping = st.slider("🛍️ Shopping & Entertainment", 0, int(income), int(income * 0.15))
+travel = st.slider("🚖 Travel & Transport", 0, int(income), int(income * 0.1))
+others = st.slider("✨ Other Expenses", 0, int(income), int(income * 0.1))
 
-# --- Budget Summary ---
-if income > 0:
-    savings = income - expenses
-    st.header("📊 Budget Summary")
-    st.write(f"💵 **Income**: ₹{income:,.2f}")
-    st.write(f"💸 **Expenses**: ₹{expenses:,.2f}")
-    st.write(f"💰 **Savings**: ₹{savings:,.2f}")
+total_expenses = rent + food + shopping + travel + others
+savings = income - total_expenses
 
-    st.header("💡 Suggestions")
-    if savings <= 0:
-        st.warning("⚠️ You are overspending! Reduce unnecessary expenses.")
-    else:
-        st.success("✅ You are saving money!")
-        if user_type == "Student":
-            st.write("- Save at least 20% of income.")
-            st.write("- Start a small **Recurring Deposit (RD)** or **SIP**.")
-        else:
-            st.write("- Save at least 30% of income.")
-            st.write("- Invest in **ELSS, PPF, NPS** for tax savings.")
-            st.write("- Maintain an **emergency fund** (6 months expenses).")
+# -------------------------
+# Display Results
+# -------------------------
+st.subheader("📊 Your Money Summary")
+st.write(f"**Total Income:** ₹{income}")
+st.write(f"**Total Expenses:** ₹{total_expenses}")
+st.write(f"**Savings:** ₹{savings}")
 
-# --- Chatbot Section ---
-st.header("💬 Ask a finance question (India Focus)")
+# -------------------------
+# Chart Visualization
+# -------------------------
+st.subheader("📌 Expense Breakdown")
+labels = ["Rent", "Food", "Shopping", "Travel", "Others", "Savings"]
+values = [rent, food, shopping, travel, others, savings]
 
-user_q = st.text_input("Type your question here:")
+fig, ax = plt.subplots()
+ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=90)
+ax.axis("equal")
+st.pyplot(fig)
 
-if user_q:
-    q = user_q.lower()
+# -------------------------
+# Finance Suggestions (Indian Style)
+# -------------------------
+st.subheader("💡 Smart Suggestions for You")
 
-    if "tax" in q:
-        st.info("👉 Save tax with **ELSS, PPF, NPS**, and insurance under **80C**. Also claim HRA, 80D (medical insurance).")
-    elif "investment" in q:
-        st.info("👉 Best for beginners: SIPs in mutual funds, FDs for safety, and an emergency fund.")
-    elif "loan" in q:
-        st.info("👉 Take a loan only if necessary. Compare interest rates. Home loan is better than personal loan.")
-    elif "savings" in q:
-        st.info("👉 Rule of thumb: Save **30% of income**. Use RDs, FDs, or SIPs depending on your goal.")
-    elif "insurance" in q:
-        st.info("👉 Buy a **term life insurance** (not endowment). Always take **health insurance** for family.")
-    elif "stock" in q:
-        st.info("👉 Start small with mutual funds SIP. Direct stocks are risky for beginners.")
-    elif "retirement" in q:
-        st.info("👉 Start investing early in **NPS + Mutual Funds** for long term.")
-    elif "gold" in q:
-        st.info("👉 Instead of physical gold, consider **Gold ETF or Sovereign Gold Bonds**.")
-    else:
-        st.info("👉 I don’t know that yet. But always save regularly and invest wisely!")
+if savings > 0:
+    st.success("Great job! You are saving money ✅")
+    st.write(f"👉 Put **₹{int(savings*0.5)}** in SIP (Mutual Funds)")
+    st.write(f"👉 Put **₹{int(savings*0.3)}** in Fixed Deposit / RD")
+    st.write(f"👉 Keep **₹{int(savings*0.2)}** as Emergency Fund")
+else:
+    st.error("⚠️ You are overspending! Try reducing shopping or travel expenses.")
+
+# -------------------------
+# Motivational Tips
+# -------------------------
+tips = [
+    "💡 Little drops make an ocean – start saving today!",
+    "🌱 Investing early is like planting a tree – shade comes later.",
+    "🪙 Gold, SIP, and FD are your best friends in India.",
+    "📉 Avoid debt traps – credit card bills can grow like wildfire!",
+    "🚀 A budget is telling your money where to go, instead of wondering where it went."
+]
+
+st.subheader("🌟 Finance Tip of the Day")
+st.info(random.choice(tips))
